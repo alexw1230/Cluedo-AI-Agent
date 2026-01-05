@@ -2,7 +2,7 @@
 
 A Python-based AI assistant for the board game **Clue (Cluedo)**.  
 
-This project uses **SAT logic** via [PySAT](https://pysathq.github.io/) to deduce which cards are held by each player and the envelope, while providing a **real-time GUI visualization** and suggesting optimal guesses using a heuristic scoring model based on expected information gain as derived from the current state of the game.
+This project uses **SAT logic** via [PySAT](https://pysathq.github.io/) to deduce which cards are held by each player and the envelope, while providing a simple **real-time GUI interface** and suggesting optimal guesses using a heuristic scoring model based on expected information gain as derived from the current state of the game.
 
 
 ## ℹ️ Overview
@@ -14,7 +14,7 @@ This project was inspired by my family, who are all avid board game players and 
 
 **PART 1: SAT Logic Solver**
 
-This project works by treating all information in Clue as Conjunctive Normal Form (CNF) boolean expressions. By creating a boolean symbol for each combonation of *(player, card)*, we can treat both the rules of the game, basic logic, and game information all in this framework. 
+This project works by treating all information in Clue as Conjunctive Normal Form (CNF) boolean expressions. By creating a boolean symbol for each combination of *(player, card)*, we can treat both the rules of the game, basic logic, and game information all in this framework. 
 
 For example, if we want to encode that a card can be in exactly one place and one place only, we can use the boolean expression
 
@@ -36,13 +36,13 @@ X(r, cs)
 
 Where cs is the card shown.
 
-There are other similar constraints that must be put on this problem, such as that the envelope must have exactly one person, weapon, and location as well as the fact that players may only have up to n cards (excluding the envelope and common cards). I will not show the exact logic for these for the sake of repetitivness, but they follow similar logical patterns.
+There are other similar constraints that must be put on this problem, such as that the envelope must have exactly one person, weapon, and location as well as the fact that players may only have up to n cards (excluding the envelope and common cards). I will not show the exact logic for these for the sake of repetitiveness, but they follow similar logical patterns.
 
 All of this logic is then combined into one massive CNF statement, which we refer to as the knowledge base (KB). Then, we use logical entailment to determine if a given symbol must be true or false. If KB ⊨ X, then X must be true. If KB ⊨ -X, then X must be false. If neither is entailed, then it is still unknown. This calculation is repeated for all 21 * (n + 2) symbols where n is the number of players. Finally, it is converted to a matrix to be displayed on the GUI using tkinter.
 
 **PART 2: Best Guess Modeling**
 
-In order to determine the best guess for our AI agent to use, we first need two things: the current state of logic in the game (from **Part 1**), and the rooms avalible for the player to go to (**Inputted from console**).  In order to calculate the best guess, we can use a heurisitc scoring method rather than a Monte Carlo method since the number of possibilities is relatively small (<1000). Furthermore, we limit ourselves by which rooms we can visit, we also limit ourselves to only guessing for information that is **NOT** known to be with another player, in order to maximize information gain. Once we have our valid people, weapons, and locations, we generate a list of candidate guesses by just putting together every possible combination. From there, we will submit each to a heuristic that will score them.
+In order to determine the best guess for our AI agent to use, we first need two things: the current state of logic in the game (from **Part 1**), and the rooms available for the player to go to (**Inputted from console**).  In order to calculate the best guess, we can use a heuristic scoring method rather than a Monte Carlo method since the number of possibilities is relatively small (<1000). Furthermore, we limit ourselves by which rooms we can visit, we also limit ourselves to only guessing for information that is **NOT** known to be with another player, in order to maximize information gain. Once we have our valid people, weapons, and locations, we generate a list of candidate guesses by just putting together every possible combination. From there, we will submit each to a heuristic that will score them.
 
 Right now in the heuristic, we judge a guess based on how much information it is expected to provide *on average*. We also weight changes to the Envelope significantly higher than any other change since at the end of the day, that *is* the end goal. So, to accomplish this, we first must generate all possible outcomes that a guess could give. Then, we can simply calculate the EV of the guess with the formula: 
  
@@ -58,11 +58,11 @@ Change in any square of a player -> 1 point
 Change to RED in any Envelope square -> 4 points
 Change to GREEN in any Envelope square -> 12 points
 
-These values may be very off, however this heuristic is very imperfect as is. If anyone would like to contribute and help me make a better heuristic, please do! This one was at least good enough to beat my family and so I am satisfied!
+These values are not necessarily optimized, however the heuristic performs well in practice game I have done. If anyone would like to contribute and help me make a better heuristic, please do! This one was at least good enough to beat my family and so I am satisfied!
 
 ### ✍️ Authors
 
-My name is [Alexander Wiegand](https://github.com/alexw1230) and I am a sophmore Computer Engineering and AMS student at Stony Brook Honors College. My interests include machine learning, finance, robotics, mathematics, and more.
+My name is [Alexander Wiegand](https://github.com/alexw1230) and I am a sophomore Computer Engineering and AMS student at Stony Brook Honors College. My interests include machine learning, finance, robotics, mathematics, and more.
 
 
 ## 🚀 Usage
